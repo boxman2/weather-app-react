@@ -21,6 +21,14 @@ function App() {
       getWeatherByGeo(lat, lon);
     });
   };
+  const getWeatherByLocation = async (location) => {
+    let url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=bd63b0df1e739e61ce1cbc327828e580&units=metric`;
+    let response = await fetch(url);
+    let data = await response.json();
+    setName(data.name);
+    setTemp(data.main.temp);
+    setDescription(data.weather[0].description.toUpperCase());
+  };
   const getWeatherByGeo = async (lat, lon) => {
     let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=bd63b0df1e739e61ce1cbc327828e580&units=metric`;
     let response = await fetch(url);
@@ -29,20 +37,20 @@ function App() {
     setTemp(data.main.temp);
     setDescription(data.weather[0].description.toUpperCase());
   };
+  const [city, setCity] = useState("");
   useEffect(() => {
-    getGeolocation();
-  }, []);
+    if (city === "") {
+      getGeolocation();
+    } else {
+      getWeatherByLocation(city);
+    }
+  }, [city]);
+
   return (
     <div>
       <div className="container">
         <WeatherBox name={name} temp={temp} description={description} />
-        <WeatherButton
-          setName={setName}
-          setTemp={setTemp}
-          setDescription={setDescription}
-          cities={cities}
-          getGeolocation={getGeolocation}
-        />
+        <WeatherButton setCity={setCity} cities={cities} />
       </div>
     </div>
   );
